@@ -1,0 +1,477 @@
+<!doctype html>
+<html lang="bg">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Гласът на Мила</title>
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Nunito:wght@700;800&display=swap">
+<style>
+/* Една колона като лист за проба: голям текст и големи бутони, удобни за възрастни слушатели */
+:root {
+  --bg: #F2F6F5;
+  --surface: #FFFFFF;
+  --ink: #1C2725;
+  --muted: #566864;
+  --line: #D3DEDB;
+  --accent: #22675D;
+  --accent-soft: #DDEDEA;
+  --on-accent: #FFFFFF;
+  --fav: #9A5B14;
+  --warn: #9B3B2E;
+  --font-display: "Nunito", "Segoe UI", system-ui, sans-serif;
+  --font-body: "Inter", "Segoe UI", system-ui, -apple-system, sans-serif;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #111816; --surface: #19231F; --ink: #E6EEEC; --muted: #9DB0AB; --line: #2A3834;
+    --accent: #6CC2B4; --accent-soft: #1D3833; --on-accent: #0D1A17; --fav: #E3A85E;
+    --warn: #E58A7C; color-scheme: dark;
+  }
+}
+[hidden] { display: none !important; }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font-body);
+  font-size: 18px;
+  line-height: 1.5;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-top: calc(28px + env(safe-area-inset-top, 0px));
+  padding-bottom: calc(56px + env(safe-area-inset-bottom, 0px));
+}
+.wrap { max-width: 640px; margin: 0 auto; display: flex; flex-direction: column; gap: 22px; }
+h1, h2, h3 { font-family: var(--font-display); text-wrap: balance; margin: 0; line-height: 1.2; }
+h1 { font-size: 2rem; font-weight: 800; }
+h2 { font-size: 1.35rem; font-weight: 800; }
+h3 { font-size: 1.25rem; font-weight: 800; }
+p { margin: 0; }
+.eyebrow { font-size: 0.8rem; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--accent); }
+.intro { display: flex; flex-direction: column; gap: 10px; }
+.hint { color: var(--muted); font-size: 1rem; }
+.block { display: flex; flex-direction: column; gap: 12px; }
+.row { display: flex; flex-wrap: wrap; gap: 10px; }
+.q { font-weight: 600; }
+
+button { font: inherit; cursor: pointer; }
+button:focus-visible, textarea:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+.opt {
+  min-height: 52px; padding: 0 20px; border-radius: 12px;
+  border: 2px solid var(--line); background: var(--surface); color: var(--ink);
+  font-size: 1.05rem; font-weight: 500;
+}
+.opt[aria-pressed="true"] { background: var(--accent); border-color: var(--accent); color: var(--on-accent); }
+.opt.fav[aria-pressed="true"] { background: var(--fav); border-color: var(--fav); color: var(--surface); }
+
+.voice {
+  background: var(--surface); border: 2px solid var(--line); border-radius: 16px;
+  padding: 18px; display: flex; flex-direction: column; gap: 16px;
+}
+.voice.complete { border-color: var(--accent); }
+.voice-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.status { font-size: 0.95rem; color: var(--muted); }
+.voice.complete .status { color: var(--accent); font-weight: 600; }
+.play {
+  min-height: 60px; border-radius: 14px; border: none;
+  background: var(--accent-soft); color: var(--ink); font-size: 1.15rem; font-weight: 600;
+  display: flex; align-items: center; justify-content: center; gap: 10px;
+}
+.play[aria-pressed="true"] { background: var(--accent); color: var(--on-accent); }
+.play .icon { font-size: 1.2rem; line-height: 1; }
+.bar { height: 6px; border-radius: 3px; background: var(--line); overflow: hidden; }
+.bar span { display: block; height: 100%; width: 0; background: var(--accent); }
+.bar.pulse span { width: 100%; animation: pulse 1.4s ease-in-out infinite; }
+@keyframes pulse { 0%, 100% { opacity: 0.25; } 50% { opacity: 1; } }
+@media (prefers-reduced-motion: reduce) { .bar.pulse span { animation: none; opacity: 0.6; } }
+.missing { color: var(--muted); font-size: 1rem; }
+
+textarea {
+  width: 100%; box-sizing: border-box; min-height: 96px; padding: 12px 14px;
+  border-radius: 12px; border: 2px solid var(--line); background: var(--surface); color: var(--ink);
+  font: inherit; resize: vertical;
+}
+.submit {
+  min-height: 60px; border-radius: 14px; border: none; background: var(--accent); color: var(--on-accent);
+  font-size: 1.15rem; font-weight: 700;
+}
+.submit:disabled { opacity: 0.45; cursor: not-allowed; }
+.todo { color: var(--warn); font-size: 1rem; }
+.done {
+  background: var(--surface); border: 2px solid var(--accent); border-radius: 16px; padding: 20px;
+  display: flex; flex-direction: column; gap: 14px;
+}
+.code {
+  font-family: ui-monospace, "Cascadia Mono", Consolas, monospace; font-size: 0.95rem;
+  background: var(--accent-soft); border-radius: 10px; padding: 12px; overflow-wrap: anywhere; user-select: all;
+}
+.secondary {
+  min-height: 52px; padding: 0 20px; border-radius: 12px; border: 2px solid var(--accent);
+  background: transparent; color: var(--accent); font-weight: 600;
+}
+footer { color: var(--muted); font-size: 0.85rem; border-top: 1px solid var(--line); padding-top: 14px; }
+</style>
+</head>
+<body>
+<main class="wrap">
+  <header class="intro">
+    <span class="eyebrow">TalkToMe · проба на гласа</span>
+    <h1>Кой глас да има Мила?</h1>
+    <p>Ще чуете едно и също кратко поздравление, прочетено от четири гласа. Пуснете всеки глас и отговорете на два въпроса за него. Накрая изберете гласа, с който бихте говорили всеки ден.</p>
+    <p class="hint">Най-добре на телефон. Усилете звука.</p>
+  </header>
+
+  <section class="block" aria-labelledby="age-title" id="age-block">
+    <h2 id="age-title">Възраст на слушащия</h2>
+    <p class="hint">По желание.</p>
+    <div class="row" id="age"></div>
+  </section>
+
+  <section class="block" aria-label="Гласове" id="voices"></section>
+
+  <section class="block" aria-labelledby="fav-title" id="fav-block">
+    <h2 id="fav-title">С кой глас бихте говорили всеки ден?</h2>
+    <div class="row" id="fav"></div>
+  </section>
+
+  <section class="block" aria-labelledby="comment-title" id="comment-block">
+    <h2 id="comment-title">Нещо друго?</h2>
+    <p class="hint">По желание: какво Ви хареса или Ви пречеше.</p>
+    <textarea id="comment" maxlength="600" aria-labelledby="comment-title"></textarea>
+  </section>
+
+  <section class="block" id="submit-block">
+    <button class="submit" id="submit" type="button">Изпрати отговора</button>
+    <p class="todo" id="todo"></p>
+  </section>
+
+  <section class="done" id="done" hidden>
+    <h2 id="done-title">Благодарим!</h2>
+    <p id="done-text"></p>
+    <div class="code" id="done-code" hidden></div>
+    <div class="row">
+      <button class="secondary" id="copy" type="button" hidden>Копирай реда</button>
+      <button class="secondary" id="again" type="button">Нов слушател</button>
+    </div>
+  </section>
+
+  <footer>Част от записите са направени с ElevenLabs. Отговорите се пазят анонимно и служат само за избора на глас.</footer>
+</main>
+
+<script src="config.js"></script>
+<script>
+(function () {
+  "use strict";
+
+  var TEXT = "Добро утро! Обажда се Мила. Как сте днес, наспахте ли се? Миналия път ми разказахте за черешата в двора на баба Ви, много ми хареса тази история. Днес искам да Ви попитам нещо друго. С какво си играехте като дете? Имахте ли любима играчка?";
+  // a, b, c: записи от ElevenLabs; d: вграденият глас на устройството (Web Speech API)
+  var SOURCES = { a: "audio/a.mp3", b: "audio/b.mp3", c: "audio/c.mp3" };
+  var KEYS = ["a", "b", "c", "d"];
+  var AGES = ["Под 60", "60–74", "75 и повече"];
+  var CLEAR = [["yes", "Да"], ["partly", "Не съвсем"]];
+  var PLEASANT = [["yes", "Да"], ["meh", "Горе-долу"], ["no", "Не"]];
+  var SHORT = { yes: "да", partly: "отчасти", meh: "горе-долу", no: "не" };
+  // Предпочитаме женски глас; мъжки (напр. Microsoft Ivan в Windows) само ако устройството няма друг
+  var MALE = /\b(ivan|borislav|georgi|dimitar|petar|male)\b/i;
+  var FEMALE = /\b(kalina|daria|female)\b/i;
+
+  var state = fresh();
+  var playing = null;
+  var deviceVoice = null;
+  var deviceChecked = false;
+
+  function shuffle(list) {
+    for (var i = list.length - 1; i > 0; i--) {
+      var j = Math.floor(Math.random() * (i + 1));
+      var t = list[i]; list[i] = list[j]; list[j] = t;
+    }
+    return list;
+  }
+  function fresh() {
+    return { order: shuffle(KEYS.slice()), answers: {}, favorite: null, age: null };
+  }
+  function el(tag, attrs, text) {
+    var n = document.createElement(tag);
+    if (attrs) Object.keys(attrs).forEach(function (k) { n.setAttribute(k, attrs[k]); });
+    if (text != null) n.textContent = text;
+    return n;
+  }
+  function available(key) { return key !== "d" || !!deviceVoice; }
+  function activeKeys() { return state.order.filter(available); }
+  function number(key) { return state.order.indexOf(key) + 1; }
+
+  // ---------- гласът на устройството ----------
+  var synth = ("speechSynthesis" in window) ? window.speechSynthesis : null;
+  function pickVoice() {
+    if (!synth) return;
+    var list = [];
+    try { list = synth.getVoices() || []; } catch (e) { list = []; }
+    var bg = list.filter(function (v) { return String(v.lang || "").toLowerCase().indexOf("bg") === 0; });
+    var notMale = bg.filter(function (v) { return !MALE.test(v.name); });
+    var google = notMale.filter(function (v) { return /google/i.test(v.name); });
+    var female = notMale.filter(function (v) { return FEMALE.test(v.name); });
+    var found = google[0] || female[0] || notMale[0] || bg[0] || null;
+    if (found !== deviceVoice) { deviceVoice = found; render(); }
+  }
+  if (synth) {
+    pickVoice();
+    if (synth.addEventListener) synth.addEventListener("voiceschanged", pickVoice);
+  }
+  setTimeout(function () { deviceChecked = true; pickVoice(); render(); }, 2500);
+
+  // ---------- записите ----------
+  var audios = {};
+  Object.keys(SOURCES).forEach(function (k) {
+    var a = new Audio(SOURCES[k]);
+    a.preload = "auto";
+    a.addEventListener("timeupdate", function () {
+      var bar = document.getElementById("bar-" + k);
+      if (bar && a.duration) bar.firstChild.style.width = Math.min(100, (a.currentTime / a.duration) * 100) + "%";
+    });
+    a.addEventListener("ended", function () { if (playing === k) { playing = null; render(); } });
+    audios[k] = a;
+  });
+
+  function stopAll() {
+    Object.keys(audios).forEach(function (k) { audios[k].pause(); audios[k].currentTime = 0; });
+    if (synth) { try { synth.cancel(); } catch (e) {} }
+    playing = null;
+  }
+  function play(key) {
+    if (playing === key) { stopAll(); render(); return; }
+    stopAll();
+    playing = key;
+    if (key === "d") {
+      var u = new SpeechSynthesisUtterance(TEXT);
+      u.lang = "bg-BG";
+      if (deviceVoice) u.voice = deviceVoice;
+      u.rate = 0.9;
+      u.onend = u.onerror = function () { if (playing === "d") { playing = null; render(); } };
+      synth.speak(u);
+    } else {
+      var p = audios[key].play();
+      if (p && p.catch) p.catch(function () { if (playing === key) { playing = null; render(); } });
+    }
+    render();
+  }
+
+  // ---------- изглед ----------
+  function choiceRow(key, field, options) {
+    var row = el("div", { "class": "row", role: "group" });
+    options.forEach(function (o) {
+      var b = el("button", { "class": "opt", type: "button", "aria-pressed": String((state.answers[key] || {})[field] === o[0]) }, o[1]);
+      b.addEventListener("click", function () {
+        state.answers[key] = state.answers[key] || {};
+        state.answers[key][field] = o[0];
+        render();
+      });
+      row.appendChild(b);
+    });
+    return row;
+  }
+
+  function renderVoices() {
+    var box = document.getElementById("voices");
+    box.textContent = "";
+    state.order.forEach(function (key, i) {
+      var ans = state.answers[key] || {};
+      var complete = !!(ans.clear && ans.pleasant);
+      var card = el("article", { "class": "voice" + (complete && available(key) ? " complete" : ""), "aria-labelledby": "vt-" + key });
+      var head = el("div", { "class": "voice-head" });
+      head.appendChild(el("h3", { id: "vt-" + key }, "Глас " + (i + 1)));
+      var status = "";
+      if (!available(key)) status = deviceChecked ? "пропуска се" : "";
+      else if (complete) status = "готово";
+      head.appendChild(el("span", { "class": "status" }, status));
+      card.appendChild(head);
+
+      if (!available(key)) {
+        var why = deviceChecked
+          ? "На това устройство няма български глас, затова този глас се пропуска. На Android го добавяте от Настройки → Синтезиран говор → Google → български. На iPhone: Настройки → Достъпност → Изговорено съдържание → Гласове → български."
+          : "Търся гласа на това устройство…";
+        card.appendChild(el("p", { "class": "missing" }, why));
+        box.appendChild(card);
+        return;
+      }
+
+      var isPlaying = playing === key;
+      var btn = el("button", { "class": "play", type: "button", "aria-pressed": String(isPlaying) });
+      btn.appendChild(el("span", { "class": "icon", "aria-hidden": "true" }, isPlaying ? "■" : "▶"));
+      btn.appendChild(el("span", null, isPlaying ? "Спри" : "Пусни гласа"));
+      btn.addEventListener("click", function () { play(key); });
+      card.appendChild(btn);
+
+      var bar = el("div", { "class": "bar" + (isPlaying && key === "d" ? " pulse" : ""), id: "bar-" + key, "aria-hidden": "true" });
+      bar.appendChild(el("span"));
+      card.appendChild(bar);
+
+      card.appendChild(el("p", { "class": "q" }, "Разбрахте ли всичко?"));
+      card.appendChild(choiceRow(key, "clear", CLEAR));
+      card.appendChild(el("p", { "class": "q" }, "Приятен ли Ви е гласът?"));
+      card.appendChild(choiceRow(key, "pleasant", PLEASANT));
+      box.appendChild(card);
+    });
+  }
+
+  function renderAge() {
+    var box = document.getElementById("age");
+    box.textContent = "";
+    AGES.forEach(function (a) {
+      var b = el("button", { "class": "opt", type: "button", "aria-pressed": String(state.age === a) }, a);
+      b.addEventListener("click", function () { state.age = state.age === a ? null : a; render(); });
+      box.appendChild(b);
+    });
+  }
+
+  function renderFav() {
+    var box = document.getElementById("fav");
+    box.textContent = "";
+    if (state.favorite && !available(state.favorite)) state.favorite = null;
+    state.order.forEach(function (key, i) {
+      if (!available(key)) return;
+      var b = el("button", { "class": "opt fav", type: "button", "aria-pressed": String(state.favorite === key) }, "Глас " + (i + 1));
+      b.addEventListener("click", function () { state.favorite = key; render(); });
+      box.appendChild(b);
+    });
+  }
+
+  function missingList() {
+    var out = [];
+    activeKeys().forEach(function (key) {
+      var a = state.answers[key] || {};
+      if (!a.clear || !a.pleasant) out.push("Глас " + number(key));
+    });
+    if (!state.favorite) out.push("любим глас");
+    return out;
+  }
+
+  function renderSubmit() {
+    var miss = missingList();
+    var waiting = !deviceChecked && !deviceVoice;
+    document.getElementById("submit").disabled = miss.length > 0 || waiting;
+    var todo = document.getElementById("todo");
+    if (waiting) todo.textContent = "Проверявам гласа на устройството…";
+    else todo.textContent = miss.length ? "Остава: " + miss.join(", ") + "." : "";
+  }
+
+  function render() {
+    renderAge();
+    renderVoices();
+    renderFav();
+    renderSubmit();
+  }
+
+  // ---------- изпращане ----------
+  function platform() {
+    var ua = navigator.userAgent || "";
+    if (/Android/i.test(ua)) return "Android";
+    if (/iPhone|iPad|iPod/i.test(ua)) return "iOS";
+    return "друго";
+  }
+  function buildRecord() {
+    var answers = {};
+    activeKeys().forEach(function (k) { answers[k] = { clear: state.answers[k].clear, pleasant: state.answers[k].pleasant }; });
+    var comment = document.getElementById("comment").value.trim().slice(0, 600);
+    return {
+      age: state.age,
+      answers: answers,
+      favorite: state.favorite,
+      voice_order: state.order.slice(),
+      device: { available: !!deviceVoice, voice: deviceVoice ? deviceVoice.name : null, platform: platform() },
+      comment: comment || null
+    };
+  }
+  function lineFor(rec) {
+    var parts = KEYS.filter(function (k) { return rec.answers[k]; }).map(function (k) {
+      return k.toUpperCase() + ":" + SHORT[rec.answers[k].clear] + "/" + SHORT[rec.answers[k].pleasant];
+    });
+    var line = "TTM " + parts.join(" ") + " ★" + rec.favorite.toUpperCase();
+    if (rec.age) line += " · " + rec.age;
+    if (rec.comment) line += " · " + rec.comment;
+    return line;
+  }
+  function wait(ms) { return new Promise(function (r) { setTimeout(r, ms); }); }
+
+  async function save(rec) {
+    var cfg = window.TTM_CONFIG || {};
+    if (!cfg.supabaseUrl || !cfg.supabaseKey) return false;
+    var headers = { "apikey": cfg.supabaseKey, "Content-Type": "application/json", "Prefer": "return=minimal" };
+    if (/^eyJ/.test(cfg.supabaseKey)) headers["Authorization"] = "Bearer " + cfg.supabaseKey;
+    var url = String(cfg.supabaseUrl).replace(/\/+$/, "") + "/rest/v1/voice_votes";
+    for (var attempt = 0; attempt < 2; attempt++) {
+      try {
+        var res = await fetch(url, { method: "POST", headers: headers, body: JSON.stringify(rec) });
+        if (res.ok) return true;
+        if (res.status < 500) return false;
+      } catch (e) { /* мрежова грешка: опитваме още веднъж */ }
+      await wait(700 + Math.random() * 700);
+    }
+    return false;
+  }
+
+  var FORM_IDS = ["age-block", "voices", "fav-block", "comment-block", "submit-block"];
+
+  function showDone(saved, rec) {
+    FORM_IDS.forEach(function (id) { document.getElementById(id).hidden = true; });
+    var done = document.getElementById("done");
+    done.hidden = false;
+    var code = document.getElementById("done-code");
+    var copy = document.getElementById("copy");
+    if (saved) {
+      document.getElementById("done-text").textContent = "Отговорът е записан. Ако до Вас има друг човек, който да чуе гласовете, натиснете „Нов слушател“.";
+      code.hidden = true; copy.hidden = true;
+    } else {
+      document.getElementById("done-text").textContent = "Отговорът не можа да се запише. Копирайте реда отдолу и го изпратете на човека, който Ви даде линка.";
+      code.textContent = lineFor(rec);
+      code.hidden = false; copy.hidden = false;
+    }
+    var title = document.getElementById("done-title");
+    title.setAttribute("tabindex", "-1");
+    try { title.focus({ preventScroll: true }); } catch (e) {}
+    done.scrollIntoView({ behavior: "smooth", block: "start" });
+  }
+
+  document.getElementById("submit").addEventListener("click", async function () {
+    if (missingList().length) return;
+    stopAll();
+    var btn = this;
+    btn.disabled = true;
+    btn.textContent = "Записвам…";
+    var rec = buildRecord();
+    var ok = await save(rec);
+    btn.textContent = "Изпрати отговора";
+    showDone(ok, rec);
+  });
+
+  document.getElementById("copy").addEventListener("click", function () {
+    var code = document.getElementById("done-code");
+    var btn = this;
+    function selectIt() {
+      var r = document.createRange(); r.selectNodeContents(code);
+      var s = window.getSelection(); s.removeAllRanges(); s.addRange(r);
+    }
+    try {
+      navigator.clipboard.writeText(code.textContent).then(function () { btn.textContent = "Копирано"; }, selectIt);
+    } catch (e) { selectIt(); }
+  });
+
+  document.getElementById("again").addEventListener("click", function () {
+    stopAll();
+    state = fresh();
+    document.getElementById("comment").value = "";
+    FORM_IDS.forEach(function (id) { document.getElementById(id).hidden = false; });
+    document.getElementById("done").hidden = true;
+    document.getElementById("copy").textContent = "Копирай реда";
+    render();
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  });
+
+  render();
+})();
+</script>
+</body>
+</html>
