@@ -4,6 +4,6 @@
 // Този ключ е публичен по замисъл: правилата в базата позволяват само добавяне на отговори.
 // Никога не слагайте тук secret или service_role ключа.
 window.TTM_CONFIG = {
-  supabaseUrl: "",
-  supabaseKey: ""
+  supabaseUrl: "https://romhotddsrindjusplrl.supabase.co",
+  supabaseKey: "sb_publishable_bJ8GveMFhWp8_p6-E-17ow_dRU6rAJz"
 };
