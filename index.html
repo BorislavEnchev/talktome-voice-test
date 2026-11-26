@@ -159,7 +159,7 @@ footer { color: var(--muted); font-size: 0.85rem; border-top: 1px solid var(--li
     </div>
   </section>
 
-  <footer>Част от записите са направени с ElevenLabs. Отговорите се пазят анонимно и служат само за избора на глас.</footer>
+  <footer>Записите са направени с ElevenLabs, Google, Cartesia и Soniox. Отговорите се пазят анонимно и служат само за избора на глас.</footer>
 </main>
 
 <script src="config.js"></script>
@@ -168,9 +168,13 @@ footer { color: var(--muted); font-size: 0.85rem; border-top: 1px solid var(--li
   "use strict";
 
   var TEXT = "Добро утро! Обажда се Мила. Как сте днес, наспахте ли се? Миналия път ми разказахте за черешата в двора на баба Ви, много ми хареса тази история. Днес искам да Ви попитам нещо друго. С какво си играехте като дете? Имахте ли любима играчка?";
-  // a, b, c: записи от ElevenLabs; d: вграденият глас на устройството (Web Speech API)
-  var SOURCES = { a: "audio/a.mp3", b: "audio/b.mp3", c: "audio/c.mp3" };
-  var KEYS = ["a", "b", "c", "d"];
+  // Кръг 1 (24.11.2026): a = MarMar, b = Moonglow, c = Milena (ElevenLabs), d = гласът на устройството.
+  // Кръг 2: Moonglow срещу гласове извън ElevenLabs.
+  //   b = Moonglow (ElevenLabs), f = Google Chirp 3 HD, g = Cartesia Sonic, h = Soniox.
+  // Ключът "d" (гласът на устройството, Web Speech API) още се поддържа, ако го върнем в KEYS.
+  var ROUND = 2;
+  var SOURCES = { b: "audio/b.mp3", f: "audio/f.mp3", g: "audio/g.mp3", h: "audio/h.mp3" };
+  var KEYS = ["b", "f", "g", "h"];
   var AGES = ["Под 60", "60–74", "75 и повече"];
   var CLEAR = [["yes", "Да"], ["partly", "Не съвсем"]];
   var PLEASANT = [["yes", "Да"], ["meh", "Горе-долу"], ["no", "Не"]];
@@ -351,7 +355,7 @@ footer { color: var(--muted); font-size: 0.85rem; border-top: 1px solid var(--li
 
   function renderSubmit() {
     var miss = missingList();
-    var waiting = !deviceChecked && !deviceVoice;
+    var waiting = KEYS.indexOf("d") >= 0 && !deviceChecked && !deviceVoice;
     document.getElementById("submit").disabled = miss.length > 0 || waiting;
     var todo = document.getElementById("todo");
     if (waiting) todo.textContent = "Проверявам гласа на устройството…";
@@ -377,6 +381,7 @@ footer { color: var(--muted); font-size: 0.85rem; border-top: 1px solid var(--li
     activeKeys().forEach(function (k) { answers[k] = { clear: state.answers[k].clear, pleasant: state.answers[k].pleasant }; });
     var comment = document.getElementById("comment").value.trim().slice(0, 600);
     return {
+      round: ROUND,
       age: state.age,
       answers: answers,
       favorite: state.favorite,
